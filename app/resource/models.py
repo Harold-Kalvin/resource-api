@@ -1,8 +1,9 @@
 from datetime import datetime
 
 from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
 
-from app.database import Base
+Base = declarative_base()
 
 
 class Resource(Base):

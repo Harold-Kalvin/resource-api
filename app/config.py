@@ -1,14 +1,16 @@
-from pydantic import BaseSettings
+from functools import lru_cache
+
+from pydantic import BaseSettings, PostgresDsn
 
 
 class Settings(BaseSettings):
-    db_name: str
-    db_user: str
-    db_password: str
-    db_host: str
+    database_url: PostgresDsn
 
     class Config:
         env_file = ".env"
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> Settings:
+    settings = Settings()
+    return settings
