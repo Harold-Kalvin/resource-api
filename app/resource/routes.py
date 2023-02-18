@@ -13,7 +13,7 @@ router = APIRouter(prefix="/resources", tags=["resources"])
 def create_resource(resource: ResourceInput, db: Session = Depends(get_session)):
     existing_resource = repository.get_resource_by_name(db, name=resource.name)
     if existing_resource:
-        raise HTTPException(status_code=409, detail="Resource with this name already exists")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Resource with this name already exists")
     return repository.create_resource(db=db, resource=resource)
 
 
@@ -27,7 +27,7 @@ def read_resources(filters: ResourceFilters = Depends(), db: Session = Depends(g
 def read_resource(resource_id: int, db: Session = Depends(get_session)):
     resource = repository.get_resource(db, resource_id=resource_id)
     if not resource:
-        raise HTTPException(status_code=404, detail="Resource not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
     return resource
 
 
@@ -35,7 +35,7 @@ def read_resource(resource_id: int, db: Session = Depends(get_session)):
 def update_resource(resource_id: int, resource: ResourceInput, db: Session = Depends(get_session)):
     existing_resource = repository.get_resource(db, resource_id=resource_id)
     if not existing_resource:
-        raise HTTPException(status_code=404, detail="Resource not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
 
     repository.update_resource(db, resource_id=resource_id, resource=resource)
     db.refresh(existing_resource)
@@ -46,6 +46,6 @@ def update_resource(resource_id: int, resource: ResourceInput, db: Session = Dep
 def delete_resource(resource_id: int, db: Session = Depends(get_session)):
     resource = repository.get_resource(db, resource_id=resource_id)
     if not resource:
-        raise HTTPException(status_code=404, detail="Resource not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
 
     repository.delete_resource(db=db, resource_id=resource_id)
