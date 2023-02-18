@@ -10,5 +10,5 @@ class Resource(Base):
     __tablename__ = "resource"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
-    created_at = Column(DateTime(timezone=True), default=datetime.now())
+    name = Column(String, unique=True, nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now())
