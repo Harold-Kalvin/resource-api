@@ -10,42 +10,42 @@ router = APIRouter(prefix="/resources", tags=["resources"])
 
 
 @router.post("/", response_model=Resource, status_code=status.HTTP_201_CREATED)
-def create_resource(resource: ResourceInput, db: Session = Depends(get_session)):
-    existing_resource = repository.get_resource_by_name(db, name=resource.name)
+async def create_resource(resource: ResourceInput, db: Session = Depends(get_session)):
+    existing_resource = await repository.get_resource_by_name(db, name=resource.name)
     if existing_resource:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Resource with this name already exists")
-    return repository.create_resource(db=db, resource=resource)
+    return await repository.create_resource(db=db, resource=resource)
 
 
 @router.get("/", response_model=list[Resource])
-def read_resources(filters: ResourceFilters = Depends(), db: Session = Depends(get_session)):
-    resources = repository.get_resources(db, filters)
+async def read_resources(filters: ResourceFilters = Depends(), db: Session = Depends(get_session)):
+    resources = await repository.get_resources(db, filters)
     return resources
 
 
 @router.get("/{resource_id}", response_model=Resource)
-def read_resource(resource_id: int, db: Session = Depends(get_session)):
-    resource = repository.get_resource(db, resource_id=resource_id)
+async def read_resource(resource_id: int, db: Session = Depends(get_session)):
+    resource = await repository.get_resource(db, resource_id=resource_id)
     if not resource:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
     return resource
 
 
 @router.patch("/{resource_id}", response_model=Resource)
-def update_resource(resource_id: int, resource: ResourceInput, db: Session = Depends(get_session)):
-    existing_resource = repository.get_resource(db, resource_id=resource_id)
+async def update_resource(resource_id: int, resource: ResourceInput, db: Session = Depends(get_session)):
+    existing_resource = await repository.get_resource(db, resource_id=resource_id)
     if not existing_resource:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
 
-    repository.update_resource(db, resource_id=resource_id, resource=resource)
-    db.refresh(existing_resource)
+    await repository.update_resource(db, resource_id=resource_id, resource=resource)
+    await db.refresh(existing_resource)
     return existing_resource
 
 
 @router.delete("/{resource_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_resource(resource_id: int, db: Session = Depends(get_session)):
-    resource = repository.get_resource(db, resource_id=resource_id)
+async def delete_resource(resource_id: int, db: Session = Depends(get_session)):
+    resource = await repository.get_resource(db, resource_id=resource_id)
     if not resource:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
 
-    repository.delete_resource(db=db, resource_id=resource_id)
+    await repository.delete_resource(db=db, resource_id=resource_id)

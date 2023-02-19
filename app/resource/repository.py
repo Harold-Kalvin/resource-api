@@ -1,42 +1,46 @@
-from sqlalchemy import and_, delete, update
-from sqlalchemy.orm import Session
+from sqlalchemy import and_, delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import Resource as ResourceORM
 from .schemas import ResourceFilters, ResourceInput
 
 
-def get_resource(db: Session, resource_id: int) -> ResourceORM:
-    return db.query(ResourceORM).filter(ResourceORM.id == resource_id).first()
+async def get_resource(db: AsyncSession, resource_id: int) -> ResourceORM | None:
+    statement = select(ResourceORM).where(ResourceORM.id == resource_id)
+    return (await db.execute(statement)).scalar()
 
 
-def get_resource_by_name(db: Session, name: str) -> ResourceORM:
-    return db.query(ResourceORM).filter(ResourceORM.name == name).first()
+async def get_resource_by_name(db: AsyncSession, name: str) -> ResourceORM | None:
+    statement = select(ResourceORM).where(ResourceORM.name == name)
+    return (await db.execute(statement)).scalar()
 
 
-def get_resources(db: Session, filters: ResourceFilters) -> list[ResourceORM]:
+async def get_resources(db: AsyncSession, filters: ResourceFilters) -> list[ResourceORM]:
     filter_list = []
     if filters.created_at_gte:
         filter_list.append(ResourceORM.created_at >= filters.created_at_gte)
     if filters.created_at_lte:
         filter_list.append(ResourceORM.created_at <= filters.created_at_lte)
-    return db.query(ResourceORM).filter(and_(*filter_list)).all()
+
+    statement = select(ResourceORM).where(and_(*filter_list))
+    return (await db.execute(statement)).scalars().all()
 
 
-def create_resource(db: Session, resource: ResourceInput) -> ResourceORM:
+async def create_resource(db: AsyncSession, resource: ResourceInput) -> ResourceORM:
     db_resource = ResourceORM(**resource.dict())
     db.add(db_resource)
-    db.commit()
-    db.refresh(db_resource)
+    await db.commit()
+    await db.refresh(db_resource)
     return db_resource
 
 
-def update_resource(db: Session, resource_id: int, resource: ResourceInput):
+async def update_resource(db: AsyncSession, resource_id: int, resource: ResourceInput):
     statement = update(ResourceORM).where(ResourceORM.id == resource_id).values(**resource.dict())
-    db.execute(statement)
-    db.commit()
+    await db.execute(statement)
+    await db.commit()
 
 
-def delete_resource(db: Session, resource_id: int):
+async def delete_resource(db: AsyncSession, resource_id: int):
     statement = delete(ResourceORM).where(ResourceORM.id == resource_id)
-    db.execute(statement)
-    db.commit()
+    await db.execute(statement)
+    await db.commit()
