@@ -42,7 +42,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = get_settings().database_url
+    url = get_settings().db_url
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True, dialect_opts={"paramstyle": "named"}
     )

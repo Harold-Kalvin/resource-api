@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: resource-api
+    build:
+      context: .
+    restart: unless-stopped
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --reload --host 0.0.0.0 --port 80"
+    ports:
+      - 8001:80
+    volumes:
+      - ./app:/project/app
+      - ./requirements.txt:/project/requirements.txt
+      - ./alembic.ini:/project/alembic.ini
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: resource-api-db
+    image: postgres:15-alpine
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 2s
+      timeout: 30s
+      retries: 10
