@@ -24,7 +24,7 @@ async def read_resources(filters: ResourceFilters = Depends(), db: Session = Dep
     return resources
 
 
-@router.get("/{resource_id}", response_model=Resource)
+@router.get("/{resource_id}/", response_model=Resource)
 async def read_resource(resource_id: int, db: Session = Depends(get_session)):
     resource = await repository.get_resource(db, resource_id=resource_id)
     if not resource:
@@ -32,7 +32,7 @@ async def read_resource(resource_id: int, db: Session = Depends(get_session)):
     return resource
 
 
-@router.patch("/{resource_id}", response_model=Resource)
+@router.patch("/{resource_id}/", response_model=Resource)
 async def update_resource(resource_id: int, resource: ResourceInput, db: Session = Depends(get_session)):
     existing_resource = await repository.get_resource(db, resource_id=resource_id)
     if not existing_resource:
@@ -43,7 +43,7 @@ async def update_resource(resource_id: int, resource: ResourceInput, db: Session
     return existing_resource
 
 
-@router.delete("/{resource_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{resource_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_resource(resource_id: int, db: Session = Depends(get_session)):
     resource = await repository.get_resource(db, resource_id=resource_id)
     if not resource:

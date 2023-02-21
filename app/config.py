@@ -5,6 +5,7 @@ from pydantic import BaseSettings, PostgresDsn
 
 class Settings(BaseSettings):
     db_url: PostgresDsn
+    db_test_url: PostgresDsn
 
     class Config:
         env_file = ".env"

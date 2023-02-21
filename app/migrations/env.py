@@ -4,10 +4,11 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy.engine import Connection
 
-from app.auth.models import Base as AuthBase
+from app.auth.models import AccessToken, User  # noqa: F401
 from app.config import get_settings
+from app.database import Base
 from app.database.session import engine
-from app.resource.models import Base as ResourceBase
+from app.resource.models import Resource  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,7 +23,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = [ResourceBase.metadata, AuthBase.metadata]
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

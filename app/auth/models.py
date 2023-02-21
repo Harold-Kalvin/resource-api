@@ -1,8 +1,7 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTableUUID
 from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyBaseAccessTokenTableUUID
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from app.database import Base
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
