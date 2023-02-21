@@ -63,3 +63,5 @@ The API docs should be available at http://127.0.0.1:8001/docs.
 Run formatters: `black .` & `isort .`
 
 Run linter: `flake8 .`
+
+Run tests: `pytest`
